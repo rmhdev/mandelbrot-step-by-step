@@ -29,3 +29,11 @@ func TestNegativePixelToReal(t *testing.T) {
 		t.Errorf("Incorrect, error expected when config.toReal(%d)", -1)
 	}
 }
+
+func TestTooBigPixelToReal(t *testing.T) {
+	config := Config{11, 11, -2.5, 2.5, -1.0, 1.0}
+	_, err := config.toReal(11)
+	if err == nil {
+		t.Errorf("Incorrect, error expected when config.toReal(%d)", 11)
+	}
+}
