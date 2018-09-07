@@ -23,3 +23,14 @@ func TestLastPixelToReal(t *testing.T) {
 			9, result, realMax)
 	}
 }
+
+func TestSomePixelToReal(t *testing.T) {
+	config := Config{11, 11, -2.5, 2.5, -1.0, 1.0}
+	result := config.toReal(5)
+	expected := 0.0
+	if result != expected {
+		t.Errorf(
+			"Incorrect config.toReal(%d), got: (%f), expected: (%f)",
+			4, result, expected)
+	}
+}
