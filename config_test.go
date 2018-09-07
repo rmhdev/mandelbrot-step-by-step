@@ -13,7 +13,7 @@ func TestToReal(t *testing.T) {
 	}
 	config := Config{11, 11, -2.5, 2.5, -1.0, 1.0}
 	for _, test := range tests {
-		result := config.toReal(test.x)
+		result, _ := config.toReal(test.x)
 		if result != test.expected {
 			t.Errorf(
 				"Incorrect config.toReal(%d), got: (%f), expected: (%f)",
@@ -24,7 +24,7 @@ func TestToReal(t *testing.T) {
 
 func TestNegativePixelToReal(t *testing.T) {
 	config := Config{11, 11, -2.5, 2.5, -1.0, 1.0}
-	result, err := config.toReal(-1)
+	_, err := config.toReal(-1)
 	if err == nil {
 		t.Errorf("Incorrect, error expected when config.toReal(%d)", -1)
 	}
