@@ -22,3 +22,12 @@ func (c Config) toReal(x int) (float64, error) {
 
 	return c.realMin + float64(x)*size, nil
 }
+
+func (c Config) toImag(y int) (float64, error) {
+	if (y < 0) || (y >= c.height) {
+		return 0, errors.New(fmt.Sprintf("Y is out of bounds! Got: %d, expected: [0..%d]", y, c.height-1))
+	}
+	size := ((c.imagMax - c.imagMin) / float64(c.height-1))
+
+	return c.imagMax - float64(y)*size, nil
+}
