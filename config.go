@@ -8,3 +8,7 @@ type Config struct {
 	imagMin float64
 	imagMax float64
 }
+
+func (c Config) toReal(x int) float64 {
+	return c.realMin
+}
