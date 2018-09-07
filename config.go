@@ -10,5 +10,8 @@ type Config struct {
 }
 
 func (c Config) toReal(x int) float64 {
-	return c.realMin
+	if x == 0 {
+		return c.realMin
+	}
+	return c.realMax
 }
