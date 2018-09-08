@@ -24,3 +24,26 @@ func TestNextValue(t *testing.T) {
 		}
 	}
 }
+
+func TestVerify(t *testing.T) {
+	tests := []struct {
+		partReal   float64
+		partImag   float64
+		iterations int
+		expected   bool
+	}{
+		{0.0, 0.0, 1, true},
+		{-2.5, 1.0, 2, false},
+		{-2.5, 1.0, 1, true},
+		{-0.75, 0.75, 4, true},
+		{-0.75, 0.75, 5, false},
+	}
+	for _, test := range tests {
+		verifier := Verifier{test.iterations}
+		result := verifier.isInside(test.partReal, test.partImag)
+		if result != test.expected {
+			t.Errorf("Incorrect! 'Is inside' verification for (%f, %f), got: %t, expected: %t",
+				test.partReal, test.partImag, result, test.expected)
+		}
+	}
+}
