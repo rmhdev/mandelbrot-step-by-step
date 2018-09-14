@@ -17,19 +17,8 @@ func main() {
 	flag.Parse() // Don't forget this!
 
 	config := Config{*width, *height, *realMin, *realMax, *imagMin, *imagMax}
-	verifier := Verifier{*iterations}
+	representation := config.representation(Verifier{*iterations})
+	exporter := Exporter{representation}
 
-	realC, imagC := 0.0, 0.0
-	for y := 0; y < config.height; y++ {
-		imagC, _ = config.toImag(y)
-		for x := 0; x < config.width; x++ {
-			realC, _ = config.toReal(x)
-			if verifier.isInside(realC, imagC) {
-				fmt.Print("*")
-			} else {
-				fmt.Print("·")
-			}
-		}
-		fmt.Println("")
-	}
+	fmt.Print(exporter.export())
 }
