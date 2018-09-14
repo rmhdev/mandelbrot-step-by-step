@@ -31,3 +31,16 @@ func (c Config) toImag(y int) (float64, error) {
 
 	return c.imagMax - float64(y)*size, nil
 }
+
+func (c Config) representation(verifier Verifier) Representation {
+	representation := CreateRepresentation(c.width, c.height)
+	realC, imagC := 0.0, 0.0
+	for y := 0; y < c.height; y++ {
+		imagC, _ = c.toImag(y)
+		for x := 0; x < c.width; x++ {
+			realC, _ = c.toReal(x)
+			representation.set(x, y, verifier.isInside(realC, imagC))
+		}
+	}
+	return representation
+}

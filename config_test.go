@@ -53,3 +53,27 @@ func TestToImag(t *testing.T) {
 		}
 	}
 }
+
+func TestRepresentation(t *testing.T) {
+	config := Config{3, 3, -2.5, 1.0, -1.0, 1.0}
+	verifier := Verifier{1}
+	expected := CreateRepresentation(11, 11)
+	expected.set(0, 0, true)
+	expected.set(0, 1, true)
+	expected.set(0, 2, true)
+	expected.set(1, 0, true)
+	expected.set(1, 1, true)
+	expected.set(1, 2, true)
+	expected.set(2, 0, true)
+	expected.set(2, 1, true)
+	expected.set(2, 2, true)
+
+	result := config.representation(verifier)
+	for x := 0; x < result.width(); x++ {
+		for y := 0; y < result.height(); y++ {
+			if expected.isInside(x, y) != result.isInside(x, y) {
+				t.Errorf("Incorrect representation for point(%d, %d), got: %t, expected: %t", x, y, result.isInside(x, y), expected.isInside(x, y))
+			}
+		}
+	}
+}
