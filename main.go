@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 )
 
 func main() {
@@ -18,8 +19,16 @@ func main() {
 
 	config := Config{*width, *height, *realMin, *realMax, *imagMin, *imagMax}
 	representation := config.representation(Verifier{*iterations})
-	exporter, _ := CreateExporter("text", representation, "", "")
-	result, _ := exporter.export()
+	exporter, exporterErr := CreateExporter("image", representation, "mandelbrot", "")
+	if exporterErr != nil {
+		fmt.Print(exporterErr)
+		os.Exit(1)
+	}
+	result, err := exporter.export()
+	if err != nil {
+		fmt.Print(err)
+		os.Exit(1)
+	}
 
 	fmt.Print(result)
 }
