@@ -16,8 +16,9 @@ func TestStdOutput(t *testing.T) {
 	representation.set(2, 1, true)
 	representation.set(3, 1, true)
 
-	exporter := Exporter{representation}
-	result := strings.Replace(exporter.export(), fmt.Sprintln(""), "_", -1)
+	exporter, _ := CreateExporter("text", representation, "", "")
+	result, _ := exporter.export()
+	result = strings.Replace(result, fmt.Sprintln(""), "_", -1)
 
 	expected := "····_****_····_"
 	if result != expected {
@@ -72,5 +73,51 @@ func TestImageCreationCreatesFolderIfDoesNotExist(t *testing.T) {
 		t.Errorf("Folder has not been created! Expected: '%s'", expectedDir)
 
 		defer os.RemoveAll(expectedDir)
+	}
+}
+
+func TestCreateTextExporter(t *testing.T) {
+	representation := CreateRepresentation(4, 3)
+	representation.set(0, 1, true)
+	representation.set(1, 1, true)
+	representation.set(2, 1, true)
+	representation.set(3, 1, true)
+
+	exporter, _ := CreateExporter("text", representation, "", "")
+	if "text" != exporter.name() {
+		t.Errorf("Incorrect exporter created, expected 'text' exporter")
+	}
+}
+
+func TestCreateImageExporter(t *testing.T) {
+	representation := CreateRepresentation(4, 3)
+	representation.set(0, 1, true)
+	representation.set(1, 1, true)
+	representation.set(2, 1, true)
+	representation.set(3, 1, true)
+
+	baseDir, err := ioutil.TempDir("", "exporter-factory")
+	if err != nil {
+		log.Fatal(err)
+	}
+	exporter, _ := CreateExporter("image", representation, baseDir, "mandelbrot.png")
+	if "image" != exporter.name() {
+		t.Errorf("Incorrect exporter created, expected 'image' exporter")
+	}
+}
+
+func TestCreateUnknownExporter(t *testing.T) {
+	representation := CreateRepresentation(4, 3)
+	representation.set(0, 1, true)
+	representation.set(1, 1, true)
+	representation.set(2, 1, true)
+	representation.set(3, 1, true)
+
+	exporter, err := CreateExporter("lorem", representation, "", "")
+	if err == nil {
+		t.Errorf("Creating an incorrect 'lorem' exporter should return error, got: nil")
+	}
+	if exporter != nil {
+		t.Errorf("Creating an incorrect 'lorem' exporter should return nil as exporter")
 	}
 }

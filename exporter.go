@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"image"
 	"image/color"
@@ -9,11 +10,30 @@ import (
 	"strings"
 )
 
-type Exporter struct {
+type Exporter interface {
+	name() string
+	export() (string, error)
+}
+
+func CreateExporter(name string, r Representation, folder string, filename string) (Exporter, error) {
+	switch name {
+	case "text":
+		return TextExporter{r}, nil
+	case "image":
+		return ImageExporter{r, folder, filename}, nil
+	}
+	return nil, errors.New(fmt.Sprintf("Invalid Exporter type '%s'", name))
+}
+
+type TextExporter struct {
 	representation Representation
 }
 
-func (e Exporter) export() string {
+func (e TextExporter) name() string {
+	return "text"
+}
+
+func (e TextExporter) export() (string, error) {
 	result := ""
 	for y := 0; y < e.representation.height(); y++ {
 		line := ""
@@ -27,13 +47,17 @@ func (e Exporter) export() string {
 		result += fmt.Sprintln(line)
 	}
 
-	return result
+	return result, nil
 }
 
 type ImageExporter struct {
 	representation Representation
 	folder         string
 	filename       string
+}
+
+func (e ImageExporter) name() string {
+	return "image"
 }
 
 func (e ImageExporter) export() (string, error) {
