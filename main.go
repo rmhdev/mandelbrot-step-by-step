@@ -18,7 +18,8 @@ func main() {
 
 	config := Config{*width, *height, *realMin, *realMax, *imagMin, *imagMax}
 	representation := config.representation(Verifier{*iterations})
-	exporter := Exporter{representation}
+	exporter, _ := CreateExporter("text", representation, "", "")
+	result, _ := exporter.export()
 
-	fmt.Print(exporter.export())
+	fmt.Print(result)
 }
