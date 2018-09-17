@@ -81,8 +81,16 @@ func (e ImageExporter) export() (string, error) {
 			return "", folderErr
 		}
 	}
+	// Check if the filename is correct. If not, fix it.
+	filename := strings.TrimSpace(e.filename)
+	if "" == filename {
+		filename = fmt.Sprintf("%dx%d", e.representation.width(), e.representation.height())
+	}
+	if !strings.HasSuffix(strings.ToLower(filename), ".png") {
+		filename = fmt.Sprintf("%s.png", filename)
+	}
 	// Create file using folder+filename, and encode de image in it:
-	resultFilename := strings.Join([]string{e.folder, e.filename}, "/")
+	resultFilename := strings.Join([]string{e.folder, filename}, "/")
 	f, err := os.OpenFile(resultFilename, os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		return "", err

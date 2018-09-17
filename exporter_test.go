@@ -76,6 +76,58 @@ func TestImageCreationCreatesFolderIfDoesNotExist(t *testing.T) {
 	}
 }
 
+func TestImageCreationGeneratesImageNameWhenEmpty(t *testing.T) {
+	representation := CreateRepresentation(4, 3)
+	representation.set(0, 1, true)
+	representation.set(1, 1, true)
+	representation.set(2, 1, true)
+	representation.set(3, 1, true)
+
+	dir, err := ioutil.TempDir("", "unknown-image-name")
+	if err != nil {
+		log.Fatal(err)
+	}
+	exporter := ImageExporter{representation, dir, ""}
+	result, exportErr := exporter.export()
+	if exportErr != nil {
+		t.Errorf("Unexpected error while exporting! Got: '%t', expected nil", exportErr)
+	}
+	if !strings.HasSuffix(result, ".png") {
+		t.Errorf("If image name is empty, app should generate a *.png name. Got: %s", result)
+	}
+	defer os.RemoveAll(dir)
+}
+
+func TestImageCreationGeneratesImageNameWithCorrectExtension(t *testing.T) {
+	representation := CreateRepresentation(4, 3)
+	representation.set(0, 1, true)
+	representation.set(1, 1, true)
+	representation.set(2, 1, true)
+	representation.set(3, 1, true)
+
+	dir, err := ioutil.TempDir("", "unknown-image-extension")
+	if err != nil {
+		log.Fatal(err)
+	}
+	tests := []struct {
+		name         string
+		expectedName string
+	}{
+		{"mandelbrot.jpeg", "mandelbrot.jpeg.png"},
+		{"mandelbrot-2", "mandelbrot-2.png"},
+		{"mandelbrot-3.PNG", "mandelbrot-3.PNG"},
+		{" mandelbrot-4 ", "mandelbrot-4.png"},
+	}
+	for _, test := range tests {
+		exporter := ImageExporter{representation, dir, test.name}
+		result, _ := exporter.export()
+		if !strings.HasSuffix(result, test.expectedName) {
+			t.Errorf("Incorrect filename extension. Got: '%s', expected filename: '%s'", result, test.expectedName)
+		}
+	}
+	defer os.RemoveAll(dir)
+}
+
 func TestCreateTextExporter(t *testing.T) {
 	representation := CreateRepresentation(4, 3)
 	representation.set(0, 1, true)
