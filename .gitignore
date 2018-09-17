@@ -12,3 +12,7 @@
 *.out
 
 mandelbrot-step-by-step
+
+# generated images
+mandelbrot/*
+!mandelbrot/.gitkeep
