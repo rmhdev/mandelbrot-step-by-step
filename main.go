@@ -7,12 +7,11 @@ import (
 )
 
 func main() {
-	width := flag.Int("width", 800, "width")
-	height := flag.Int("height", 601, "height")
-	realMin := flag.Float64("realMin", -2.0, "Minimum value for real part")
-	realMax := flag.Float64("realMax", 0.5, "Maximum value for real part")
-	imagMin := flag.Float64("imagMin", -1.0, "Minimum value for imaginary part")
-	imagMax := flag.Float64("imagMax", 1.0, "Maximum value for imaginary part")
+	width := flag.Int("width", 804, "width")
+	height := flag.Int("height", 603, "height")
+	realMin := flag.Float64("realMin", -2.5, "Minimum value for real part")
+	realMax := flag.Float64("realMax", 1.0, "Maximum value for real part")
+	imagMin := flag.Float64("imagMin", -1.3125, "Minimum value for imaginary part")
 	iterations := flag.Int("iterations", 50, "maximum number of iterations per pixel")
 	exporterName := flag.String("exporter", "image", "name of the exporter")
 	folder := flag.String("folder", "mandelbrot", "folder for exporting images")
@@ -20,7 +19,7 @@ func main() {
 
 	flag.Parse() // Don't forget this!
 
-	config := Config{*width, *height, *realMin, *realMax, *imagMin, *imagMax}
+	config := CreateConfig(*width, *height, *realMin, *realMax, *imagMin)
 	representation := config.representation(Verifier{*iterations})
 	exporter, exporterErr := CreateExporter(*exporterName, representation, *folder, *filename)
 	if exporterErr != nil {
