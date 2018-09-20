@@ -77,3 +77,24 @@ func TestRepresentation(t *testing.T) {
 		}
 	}
 }
+
+func TestCreateConfig(t *testing.T) {
+	tests := []struct {
+		width           int
+		height          int
+		realMin         float64
+		realMax         float64
+		imagMin         float64
+		expectedImagMax float64
+	}{
+		{100, 100, -2.0, 2.0, -2.0, 2.0},
+		{400, 300, -2.0, 2.0, -2.0, 1.0},
+		{1000, 500, -2.0, 2.0, -2.0, 0.0},
+	}
+	for _, test := range tests {
+		config := CreateConfig(test.width, test.height, test.realMin, test.realMax, test.imagMin)
+		if test.expectedImagMax != config.imagMax {
+			t.Errorf("Incorrect imagMax value. Got: %f, expected: %f", config.imagMax, test.expectedImagMax)
+		}
+	}
+}
