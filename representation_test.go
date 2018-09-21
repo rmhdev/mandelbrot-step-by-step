@@ -4,9 +4,9 @@ import "testing"
 
 func TestDefaultIsInside(t *testing.T) {
 	representation := CreateRepresentation(11, 11)
-	result := representation.isInside(0, 0)
-	if false != result {
-		t.Errorf("Incorrect default value for isInside(%d, %d), got: %t, expected: %t", 0, 0, false, result)
+	result := representation.get(0, 0)
+	if false != result.isInside {
+		t.Errorf("Incorrect default value for isInside(%d, %d), got: %t, expected: %t", 0, 0, false, result.isInside)
 	}
 }
 
@@ -23,9 +23,9 @@ func TestSetValue(t *testing.T) {
 	for _, test := range tests {
 		representation := CreateRepresentation(11, 11)
 		representation.set(test.x, test.y, Verification{test.isInside, 1})
-		result := representation.isInside(test.x, test.y)
-		if test.isInside != result {
-			t.Errorf("Incorrect set(%d, %d, %t), got: %t, expected: %t", test.x, test.y, test.isInside, test.isInside, test.expectedIsInside)
+		result := representation.get(test.x, test.y)
+		if test.expectedIsInside != result.isInside {
+			t.Errorf("Incorrect set(%d, %d, %t), got: %t, expected: %t", test.x, test.y, test.isInside, result.isInside, test.expectedIsInside)
 		}
 	}
 }

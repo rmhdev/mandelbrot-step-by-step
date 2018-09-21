@@ -25,6 +25,6 @@ func (r Representation) set(x int, y int, v Verification) {
 	r.points[y][x] = v
 }
 
-func (r Representation) isInside(x int, y int) bool {
-	return r.points[y][x].isInside
+func (r Representation) get(x int, y int) Verification {
+	return r.points[y][x]
 }

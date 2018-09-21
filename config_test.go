@@ -72,8 +72,8 @@ func TestRepresentation(t *testing.T) {
 	result := config.representation(verifier)
 	for x := 0; x < result.width(); x++ {
 		for y := 0; y < result.height(); y++ {
-			if expected.isInside(x, y) != result.isInside(x, y) {
-				t.Errorf("Incorrect representation for point(%d, %d), got: %t, expected: %t", x, y, result.isInside(x, y), expected.isInside(x, y))
+			if expected.get(x, y).isInside != result.get(x, y).isInside {
+				t.Errorf("Incorrect representation for point(%d, %d), got: %t, expected: %t", x, y, result.get(x, y).isInside, expected.get(x, y).isInside)
 			}
 		}
 	}

@@ -38,7 +38,7 @@ func (e TextExporter) export() (string, error) {
 	for y := 0; y < e.representation.height(); y++ {
 		line := ""
 		for x := 0; x < e.representation.width(); x++ {
-			if e.representation.isInside(x, y) {
+			if e.representation.get(x, y).isInside {
 				line += "*"
 			} else {
 				line += "·"
@@ -68,7 +68,7 @@ func (e ImageExporter) export() (string, error) {
 	for y := 0; y < e.representation.height(); y++ {
 		for x := 0; x < e.representation.width(); x++ {
 			color = white
-			if e.representation.isInside(x, y) {
+			if e.representation.get(x, y).isInside {
 				color = black
 			}
 			image.Set(x, y, color)
