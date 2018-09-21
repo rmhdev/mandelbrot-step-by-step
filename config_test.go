@@ -57,16 +57,17 @@ func TestToImag(t *testing.T) {
 func TestRepresentation(t *testing.T) {
 	config := Config{3, 3, -2.5, 1.0, -1.0, 1.0}
 	verifier := Verifier{1}
+	verification := Verification{true}
 	expected := CreateRepresentation(11, 11)
-	expected.set(0, 0, true)
-	expected.set(0, 1, true)
-	expected.set(0, 2, true)
-	expected.set(1, 0, true)
-	expected.set(1, 1, true)
-	expected.set(1, 2, true)
-	expected.set(2, 0, true)
-	expected.set(2, 1, true)
-	expected.set(2, 2, true)
+	expected.set(0, 0, verification)
+	expected.set(0, 1, verification)
+	expected.set(0, 2, verification)
+	expected.set(1, 0, verification)
+	expected.set(1, 1, verification)
+	expected.set(1, 2, verification)
+	expected.set(2, 0, verification)
+	expected.set(2, 1, verification)
+	expected.set(2, 2, verification)
 
 	result := config.representation(verifier)
 	for x := 0; x < result.width(); x++ {

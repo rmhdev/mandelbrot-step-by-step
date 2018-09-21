@@ -1,13 +1,13 @@
 package main
 
 type Representation struct {
-	points [][]bool
+	points [][]Verification
 }
 
 func CreateRepresentation(width int, height int) Representation {
-	points := make([][]bool, height)
+	points := make([][]Verification, height)
 	for i := range points {
-		points[i] = make([]bool, width)
+		points[i] = make([]Verification, width)
 	}
 
 	return Representation{points}
@@ -21,10 +21,10 @@ func (r Representation) height() int {
 	return len(r.points)
 }
 
-func (r Representation) set(x int, y int, isInside bool) {
-	r.points[y][x] = isInside
+func (r Representation) set(x int, y int, v Verification) {
+	r.points[y][x] = v
 }
 
 func (r Representation) isInside(x int, y int) bool {
-	return r.points[y][x]
+	return r.points[y][x].isInside
 }

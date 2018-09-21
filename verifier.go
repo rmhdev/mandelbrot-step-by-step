@@ -6,16 +6,20 @@ type Verifier struct {
 	maxIterations int
 }
 
-func (v Verifier) isInside(realC float64, imagC float64) bool {
+type Verification struct {
+	isInside bool
+}
+
+func (v Verifier) verify(realC float64, imagC float64) Verification {
 	realZ, imagZ, modulusZ := 0.0, 0.0, 0.0
 	for i := 0; i < v.maxIterations; i++ {
 		modulusZ = math.Sqrt(realZ*realZ + imagZ*imagZ)
 		if modulusZ > 2 {
-			return false
+			return Verification{false}
 		}
 		realZ, imagZ = v.next(realZ, imagZ, realC, imagC)
 	}
-	return true
+	return Verification{true}
 }
 
 // Returns the next complex number z in "z = z^2 + c".

@@ -45,7 +45,7 @@ func (c Config) representation(verifier Verifier) Representation {
 		imagC, _ = c.toImag(y)
 		for x := 0; x < c.width; x++ {
 			realC, _ = c.toReal(x)
-			representation.set(x, y, verifier.isInside(realC, imagC))
+			representation.set(x, y, verifier.verify(realC, imagC))
 		}
 	}
 	return representation

@@ -10,11 +10,7 @@ import (
 )
 
 func TestStdOutput(t *testing.T) {
-	representation := CreateRepresentation(4, 3)
-	representation.set(0, 1, true)
-	representation.set(1, 1, true)
-	representation.set(2, 1, true)
-	representation.set(3, 1, true)
+	representation := NewDefaultVeritication()
 
 	exporter, _ := CreateExporter("text", representation, "", "")
 	result, _ := exporter.export()
@@ -26,12 +22,18 @@ func TestStdOutput(t *testing.T) {
 	}
 }
 
-func TestImageCreatesFile(t *testing.T) {
+func NewDefaultVeritication() Representation {
 	representation := CreateRepresentation(4, 3)
-	representation.set(0, 1, true)
-	representation.set(1, 1, true)
-	representation.set(2, 1, true)
-	representation.set(3, 1, true)
+	representation.set(0, 1, Verification{true})
+	representation.set(1, 1, Verification{true})
+	representation.set(2, 1, Verification{true})
+	representation.set(3, 1, Verification{true})
+
+	return representation
+}
+
+func TestImageCreatesFile(t *testing.T) {
+	representation := NewDefaultVeritication()
 
 	dir, err := ioutil.TempDir("", "rmhdev-mandelbrot")
 	if err != nil {
@@ -53,11 +55,7 @@ func TestImageCreatesFile(t *testing.T) {
 }
 
 func TestImageCreationCreatesFolderIfDoesNotExist(t *testing.T) {
-	representation := CreateRepresentation(4, 3)
-	representation.set(0, 1, true)
-	representation.set(1, 1, true)
-	representation.set(2, 1, true)
-	representation.set(3, 1, true)
+	representation := NewDefaultVeritication()
 
 	baseDir, err := ioutil.TempDir("", "")
 	if err != nil {
@@ -77,11 +75,7 @@ func TestImageCreationCreatesFolderIfDoesNotExist(t *testing.T) {
 }
 
 func TestImageCreationGeneratesImageNameWhenEmpty(t *testing.T) {
-	representation := CreateRepresentation(4, 3)
-	representation.set(0, 1, true)
-	representation.set(1, 1, true)
-	representation.set(2, 1, true)
-	representation.set(3, 1, true)
+	representation := NewDefaultVeritication()
 
 	dir, err := ioutil.TempDir("", "unknown-image-name")
 	if err != nil {
@@ -99,11 +93,7 @@ func TestImageCreationGeneratesImageNameWhenEmpty(t *testing.T) {
 }
 
 func TestImageCreationGeneratesImageNameWithCorrectExtension(t *testing.T) {
-	representation := CreateRepresentation(4, 3)
-	representation.set(0, 1, true)
-	representation.set(1, 1, true)
-	representation.set(2, 1, true)
-	representation.set(3, 1, true)
+	representation := NewDefaultVeritication()
 
 	dir, err := ioutil.TempDir("", "unknown-image-extension")
 	if err != nil {
@@ -129,11 +119,7 @@ func TestImageCreationGeneratesImageNameWithCorrectExtension(t *testing.T) {
 }
 
 func TestCreateTextExporter(t *testing.T) {
-	representation := CreateRepresentation(4, 3)
-	representation.set(0, 1, true)
-	representation.set(1, 1, true)
-	representation.set(2, 1, true)
-	representation.set(3, 1, true)
+	representation := NewDefaultVeritication()
 
 	exporter, _ := CreateExporter("text", representation, "", "")
 	if "text" != exporter.name() {
@@ -142,11 +128,7 @@ func TestCreateTextExporter(t *testing.T) {
 }
 
 func TestCreateImageExporter(t *testing.T) {
-	representation := CreateRepresentation(4, 3)
-	representation.set(0, 1, true)
-	representation.set(1, 1, true)
-	representation.set(2, 1, true)
-	representation.set(3, 1, true)
+	representation := NewDefaultVeritication()
 
 	baseDir, err := ioutil.TempDir("", "exporter-factory")
 	if err != nil {
@@ -159,11 +141,7 @@ func TestCreateImageExporter(t *testing.T) {
 }
 
 func TestCreateUnknownExporter(t *testing.T) {
-	representation := CreateRepresentation(4, 3)
-	representation.set(0, 1, true)
-	representation.set(1, 1, true)
-	representation.set(2, 1, true)
-	representation.set(3, 1, true)
+	representation := NewDefaultVeritication()
 
 	exporter, err := CreateExporter("lorem", representation, "", "")
 	if err == nil {

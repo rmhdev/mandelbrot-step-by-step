@@ -40,10 +40,10 @@ func TestVerify(t *testing.T) {
 	}
 	for _, test := range tests {
 		verifier := Verifier{test.iterations}
-		result := verifier.isInside(test.partReal, test.partImag)
-		if result != test.expected {
+		result := verifier.verify(test.partReal, test.partImag)
+		if result.isInside != test.expected {
 			t.Errorf("Incorrect! 'Is inside' verification for (%f, %f), got: %t, expected: %t",
-				test.partReal, test.partImag, result, test.expected)
+				test.partReal, test.partImag, result.isInside, test.expected)
 		}
 	}
 }
