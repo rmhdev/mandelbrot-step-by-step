@@ -24,10 +24,11 @@ func TestStdOutput(t *testing.T) {
 
 func NewDefaultVeritication() Representation {
 	representation := CreateRepresentation(4, 3)
-	representation.set(0, 1, Verification{true})
-	representation.set(1, 1, Verification{true})
-	representation.set(2, 1, Verification{true})
-	representation.set(3, 1, Verification{true})
+	verification := Verification{true, 1}
+	representation.set(0, 1, verification)
+	representation.set(1, 1, verification)
+	representation.set(2, 1, verification)
+	representation.set(3, 1, verification)
 
 	return representation
 }

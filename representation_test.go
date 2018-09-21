@@ -22,7 +22,7 @@ func TestSetValue(t *testing.T) {
 	}
 	for _, test := range tests {
 		representation := CreateRepresentation(11, 11)
-		representation.set(test.x, test.y, Verification{test.isInside})
+		representation.set(test.x, test.y, Verification{test.isInside, 1})
 		result := representation.isInside(test.x, test.y)
 		if test.isInside != result {
 			t.Errorf("Incorrect set(%d, %d, %t), got: %t, expected: %t", test.x, test.y, test.isInside, test.isInside, test.expectedIsInside)
