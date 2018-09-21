@@ -12,7 +12,8 @@ import (
 func TestStdOutput(t *testing.T) {
 	representation := NewDefaultVeritication()
 
-	exporter, _ := CreateExporter("text", representation, "", "")
+	palette := BlackWhitePalette{}
+	exporter, _ := CreateExporter("text", representation, "", "", palette)
 	result, _ := exporter.export()
 	result = strings.Replace(result, fmt.Sprintln(""), "_", -1)
 
@@ -40,7 +41,7 @@ func TestImageCreatesFile(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	exporter := ImageExporter{representation, dir, "mandelbrot.png"}
+	exporter := ImageExporter{representation, dir, "mandelbrot.png", CreatePalette()}
 	result, exportErr := exporter.export()
 	if exportErr != nil {
 		t.Errorf("Unexpected error while exporting! Got: '%t', expected nil", exportErr)
@@ -55,6 +56,10 @@ func TestImageCreatesFile(t *testing.T) {
 	defer os.RemoveAll(dir)
 }
 
+func CreatePalette() BlackWhitePalette {
+	return BlackWhitePalette{}
+}
+
 func TestImageCreationCreatesFolderIfDoesNotExist(t *testing.T) {
 	representation := NewDefaultVeritication()
 
@@ -63,7 +68,7 @@ func TestImageCreationCreatesFolderIfDoesNotExist(t *testing.T) {
 		log.Fatal(err)
 	}
 	expectedDir := strings.Join([]string{baseDir, "new-folder"}, "/")
-	exporter := ImageExporter{representation, expectedDir, "mandelbrot.png"}
+	exporter := ImageExporter{representation, expectedDir, "mandelbrot.png", CreatePalette()}
 	_, exportErr := exporter.export()
 	if exportErr != nil {
 		t.Errorf("Unexpected error while creating Mandelbrot image, got: '%s'", exportErr)
@@ -82,7 +87,7 @@ func TestImageCreationGeneratesImageNameWhenEmpty(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	exporter := ImageExporter{representation, dir, ""}
+	exporter := ImageExporter{representation, dir, "", CreatePalette()}
 	result, exportErr := exporter.export()
 	if exportErr != nil {
 		t.Errorf("Unexpected error while exporting! Got: '%t', expected nil", exportErr)
@@ -110,7 +115,7 @@ func TestImageCreationGeneratesImageNameWithCorrectExtension(t *testing.T) {
 		{" mandelbrot-4 ", "mandelbrot-4.png"},
 	}
 	for _, test := range tests {
-		exporter := ImageExporter{representation, dir, test.name}
+		exporter := ImageExporter{representation, dir, test.name, CreatePalette()}
 		result, _ := exporter.export()
 		if !strings.HasSuffix(result, test.expectedName) {
 			t.Errorf("Incorrect filename extension. Got: '%s', expected filename: '%s'", result, test.expectedName)
@@ -122,7 +127,7 @@ func TestImageCreationGeneratesImageNameWithCorrectExtension(t *testing.T) {
 func TestCreateTextExporter(t *testing.T) {
 	representation := NewDefaultVeritication()
 
-	exporter, _ := CreateExporter("text", representation, "", "")
+	exporter, _ := CreateExporter("text", representation, "", "", CreatePalette())
 	if "text" != exporter.name() {
 		t.Errorf("Incorrect exporter created, expected 'text' exporter")
 	}
@@ -135,7 +140,7 @@ func TestCreateImageExporter(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	exporter, _ := CreateExporter("image", representation, baseDir, "mandelbrot.png")
+	exporter, _ := CreateExporter("image", representation, baseDir, "mandelbrot.png", CreatePalette())
 	if "image" != exporter.name() {
 		t.Errorf("Incorrect exporter created, expected 'image' exporter")
 	}
@@ -144,7 +149,7 @@ func TestCreateImageExporter(t *testing.T) {
 func TestCreateUnknownExporter(t *testing.T) {
 	representation := NewDefaultVeritication()
 
-	exporter, err := CreateExporter("lorem", representation, "", "")
+	exporter, err := CreateExporter("lorem", representation, "", "", CreatePalette())
 	if err == nil {
 		t.Errorf("Creating an incorrect 'lorem' exporter should return error, got: nil")
 	}

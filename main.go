@@ -21,7 +21,8 @@ func main() {
 
 	config := CreateConfig(*width, *height, *realMin, *realMax, *imagMin)
 	representation := config.representation(Verifier{*iterations})
-	exporter, exporterErr := CreateExporter(*exporterName, representation, *folder, *filename)
+	palette := BlackWhitePalette{}
+	exporter, exporterErr := CreateExporter(*exporterName, representation, *folder, *filename, palette)
 	if exporterErr != nil {
 		fmt.Print(exporterErr)
 		os.Exit(1)
