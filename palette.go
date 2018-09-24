@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"image/color"
+	"image/color/palette"
 )
 
 type Palette interface {
@@ -16,7 +17,10 @@ func CreatePalette(name string) (Palette, error) {
 		return BlackWhitePalette{}, nil
 	case "bob_ross":
 		return BobRossPalette{}, nil
+	case "plan9":
+		return Plan9Palette{}, nil
 	}
+
 	return nil, errors.New(fmt.Sprintf("Undefined palette '%s'", name))
 }
 
@@ -56,4 +60,16 @@ func (p BobRossPalette) color(v Verification) color.Color {
 	pos := (v.iterations) % (len(BobRoss) - 1)
 
 	return BobRoss[pos+1]
+}
+
+type Plan9Palette struct {
+}
+
+func (p Plan9Palette) color(v Verification) color.Color {
+	if v.isInside {
+		return palette.Plan9[0]
+	}
+	pos := (v.iterations) % (len(palette.Plan9) - 1)
+
+	return palette.Plan9[pos+1]
 }

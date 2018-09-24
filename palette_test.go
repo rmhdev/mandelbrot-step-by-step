@@ -42,6 +42,26 @@ func TestBobRossPalette(t *testing.T) {
 	}
 }
 
+func TestPlan9Palette(t *testing.T) {
+	palette := Plan9Palette{}
+	tests := []struct {
+		isInside      bool
+		iterations    int
+		expectedColor color.Color
+		description   string
+	}{
+		{true, 1, color.RGBA{0, 0, 0, 255}, "Point is inside Mandelbrot"},
+		{false, 254, color.RGBA{255, 255, 255, 255}, "Max iteration, and still not inside"},
+		{false, 255, color.RGBA{0, 0, 68, 255}, "Iteration greater than number of colors"},
+	}
+	for _, test := range tests {
+		resultColor := palette.color(Verification{test.isInside, test.iterations})
+		if test.expectedColor != resultColor {
+			t.Errorf("Incorrect color in Plan9 palette (inside: %v, iter: %d). Got: '%v', expected: '%v' (%s)", test.isInside, test.iterations, resultColor, test.expectedColor, test.description)
+		}
+	}
+}
+
 func TestCreateCorrectPalette(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -49,6 +69,7 @@ func TestCreateCorrectPalette(t *testing.T) {
 	}{
 		{"bw", BlackWhitePalette{}},
 		{"bob_ross", BobRossPalette{}},
+		{"plan9", Plan9Palette{}},
 	}
 
 	for _, test := range tests {
