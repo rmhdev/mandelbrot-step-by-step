@@ -12,8 +12,7 @@ import (
 func TestStdOutput(t *testing.T) {
 	representation := NewDefaultVeritication()
 
-	palette := BlackWhitePalette{}
-	exporter, _ := CreateExporter("text", representation, "", "", palette)
+	exporter, _ := CreateExporter("text", representation, "", "", DefaultPalette())
 	result, _ := exporter.export()
 	result = strings.Replace(result, fmt.Sprintln(""), "_", -1)
 
@@ -21,6 +20,10 @@ func TestStdOutput(t *testing.T) {
 	if result != expected {
 		t.Errorf("Incorrect export! got: `%s`, expected: `%s`", result, expected)
 	}
+}
+
+func DefaultPalette() Palette {
+	return BlackWhitePalette{}
 }
 
 func NewDefaultVeritication() Representation {
@@ -41,7 +44,7 @@ func TestImageCreatesFile(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	exporter := ImageExporter{representation, dir, "mandelbrot.png", CreatePalette()}
+	exporter := ImageExporter{representation, dir, "mandelbrot.png", DefaultPalette()}
 	result, exportErr := exporter.export()
 	if exportErr != nil {
 		t.Errorf("Unexpected error while exporting! Got: '%t', expected nil", exportErr)
@@ -56,10 +59,6 @@ func TestImageCreatesFile(t *testing.T) {
 	defer os.RemoveAll(dir)
 }
 
-func CreatePalette() BlackWhitePalette {
-	return BlackWhitePalette{}
-}
-
 func TestImageCreationCreatesFolderIfDoesNotExist(t *testing.T) {
 	representation := NewDefaultVeritication()
 
@@ -68,7 +67,7 @@ func TestImageCreationCreatesFolderIfDoesNotExist(t *testing.T) {
 		log.Fatal(err)
 	}
 	expectedDir := strings.Join([]string{baseDir, "new-folder"}, "/")
-	exporter := ImageExporter{representation, expectedDir, "mandelbrot.png", CreatePalette()}
+	exporter := ImageExporter{representation, expectedDir, "mandelbrot.png", DefaultPalette()}
 	_, exportErr := exporter.export()
 	if exportErr != nil {
 		t.Errorf("Unexpected error while creating Mandelbrot image, got: '%s'", exportErr)
@@ -87,7 +86,7 @@ func TestImageCreationGeneratesImageNameWhenEmpty(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	exporter := ImageExporter{representation, dir, "", CreatePalette()}
+	exporter := ImageExporter{representation, dir, "", DefaultPalette()}
 	result, exportErr := exporter.export()
 	if exportErr != nil {
 		t.Errorf("Unexpected error while exporting! Got: '%t', expected nil", exportErr)
@@ -115,7 +114,7 @@ func TestImageCreationGeneratesImageNameWithCorrectExtension(t *testing.T) {
 		{" mandelbrot-4 ", "mandelbrot-4.png"},
 	}
 	for _, test := range tests {
-		exporter := ImageExporter{representation, dir, test.name, CreatePalette()}
+		exporter := ImageExporter{representation, dir, test.name, DefaultPalette()}
 		result, _ := exporter.export()
 		if !strings.HasSuffix(result, test.expectedName) {
 			t.Errorf("Incorrect filename extension. Got: '%s', expected filename: '%s'", result, test.expectedName)
@@ -126,8 +125,7 @@ func TestImageCreationGeneratesImageNameWithCorrectExtension(t *testing.T) {
 
 func TestCreateTextExporter(t *testing.T) {
 	representation := NewDefaultVeritication()
-
-	exporter, _ := CreateExporter("text", representation, "", "", CreatePalette())
+	exporter, _ := CreateExporter("text", representation, "", "", DefaultPalette())
 	if "text" != exporter.name() {
 		t.Errorf("Incorrect exporter created, expected 'text' exporter")
 	}
@@ -140,7 +138,7 @@ func TestCreateImageExporter(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	exporter, _ := CreateExporter("image", representation, baseDir, "mandelbrot.png", CreatePalette())
+	exporter, _ := CreateExporter("image", representation, baseDir, "mandelbrot.png", DefaultPalette())
 	if "image" != exporter.name() {
 		t.Errorf("Incorrect exporter created, expected 'image' exporter")
 	}
@@ -148,8 +146,7 @@ func TestCreateImageExporter(t *testing.T) {
 
 func TestCreateUnknownExporter(t *testing.T) {
 	representation := NewDefaultVeritication()
-
-	exporter, err := CreateExporter("lorem", representation, "", "", CreatePalette())
+	exporter, err := CreateExporter("lorem", representation, "", "", DefaultPalette())
 	if err == nil {
 		t.Errorf("Creating an incorrect 'lorem' exporter should return error, got: nil")
 	}

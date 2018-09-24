@@ -16,12 +16,17 @@ func main() {
 	exporterName := flag.String("exporter", "image", "name of the exporter")
 	folder := flag.String("folder", "mandelbrot", "folder for exporting images")
 	filename := flag.String("filename", "", "name of the image")
+	paletteName := flag.String("palette", "bw", "name of the color palette")
 
 	flag.Parse() // Don't forget this!
 
 	config := CreateConfig(*width, *height, *realMin, *realMax, *imagMin)
 	representation := config.representation(Verifier{*iterations})
-	palette := BlackWhitePalette{}
+	palette, paletteErr := CreatePalette(*paletteName)
+	if paletteErr != nil {
+		fmt.Print(paletteErr)
+		os.Exit(1)
+	}
 	exporter, exporterErr := CreateExporter(*exporterName, representation, *folder, *filename, palette)
 	if exporterErr != nil {
 		fmt.Print(exporterErr)

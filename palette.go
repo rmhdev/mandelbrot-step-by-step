@@ -1,6 +1,24 @@
 package main
 
-import "image/color"
+import (
+	"errors"
+	"fmt"
+	"image/color"
+)
+
+type Palette interface {
+	color(v Verification) color.Color
+}
+
+func CreatePalette(name string) (Palette, error) {
+	switch name {
+	case "bw":
+		return BlackWhitePalette{}, nil
+	case "bob_ross":
+		return BobRossPalette{}, nil
+	}
+	return nil, errors.New(fmt.Sprintf("Undefined palette '%s'", name))
+}
 
 type BlackWhitePalette struct {
 }

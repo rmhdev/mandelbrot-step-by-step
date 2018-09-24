@@ -14,7 +14,7 @@ type Exporter interface {
 	export() (string, error)
 }
 
-func CreateExporter(name string, r Representation, folder string, filename string, palette BlackWhitePalette) (Exporter, error) {
+func CreateExporter(name string, r Representation, folder string, filename string, palette Palette) (Exporter, error) {
 	switch name {
 	case "text":
 		return TextExporter{r}, nil
@@ -53,7 +53,7 @@ type ImageExporter struct {
 	representation Representation
 	folder         string
 	filename       string
-	palette        BlackWhitePalette
+	palette        Palette
 }
 
 func (e ImageExporter) name() string {

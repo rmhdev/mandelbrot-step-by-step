@@ -2,6 +2,7 @@ package main
 
 import (
 	"image/color"
+	"reflect"
 	"testing"
 )
 
@@ -38,5 +39,35 @@ func TestBobRossPalette(t *testing.T) {
 		if test.expectedColor != resultColor {
 			t.Errorf("Incorrect color in BobRoss palette (inside: %v, iter: %d). Got: '%v', expected: '%v' (%s)", test.isInside, test.iterations, resultColor, test.expectedColor, test.description)
 		}
+	}
+}
+
+func TestCreateCorrectPalette(t *testing.T) {
+	tests := []struct {
+		name     string
+		expected Palette
+	}{
+		{"bw", BlackWhitePalette{}},
+		{"bob_ross", BobRossPalette{}},
+	}
+
+	for _, test := range tests {
+		palette, err := CreatePalette(test.name)
+		if err != nil {
+			t.Errorf("Incorrect '%s' palette creation, got error", test.name)
+		}
+		if reflect.TypeOf(palette) != reflect.TypeOf(test.expected) {
+			t.Errorf("Incorrect '%s' palette type, got: '%v', expected: '%v'", test.name, reflect.TypeOf(palette), reflect.TypeOf(test.expected))
+		}
+	}
+}
+
+func TestCreateIncorrectPalette(t *testing.T) {
+	palette, err := CreatePalette("lorem")
+	if err == nil {
+		t.Errorf("Incorrect '%s' palette creation, expected error", "lorem")
+	}
+	if palette != nil {
+		t.Errorf("Incorrect '%s' palette type, got: '%v', expected: nil", "lorem", reflect.TypeOf(palette))
 	}
 }
