@@ -14,12 +14,12 @@ type Exporter interface {
 	export() (string, error)
 }
 
-func CreateExporter(name string, r Representation, folder string, filename string, palette Palette) (Exporter, error) {
+func CreateExporter(name string, r Representation, folder string, filename string, coloring Coloring) (Exporter, error) {
 	switch name {
 	case "text":
 		return TextExporter{r}, nil
 	case "image":
-		return ImageExporter{r, folder, filename, palette}, nil
+		return ImageExporter{r, folder, filename, coloring}, nil
 	}
 	return nil, errors.New(fmt.Sprintf("Invalid Exporter type '%s'", name))
 }
@@ -53,7 +53,7 @@ type ImageExporter struct {
 	representation Representation
 	folder         string
 	filename       string
-	palette        Palette
+	coloring       Coloring
 }
 
 func (e ImageExporter) name() string {
@@ -64,7 +64,7 @@ func (e ImageExporter) export() (string, error) {
 	image := image.NewRGBA(image.Rect(0, 0, e.representation.width(), e.representation.height()))
 	for y := 0; y < e.representation.height(); y++ {
 		for x := 0; x < e.representation.width(); x++ {
-			image.Set(x, y, e.palette.color(e.representation.get(x, y)))
+			image.Set(x, y, e.coloring.color(e.representation.get(x, y)))
 		}
 	}
 	// If destination folder does not exist, create it:

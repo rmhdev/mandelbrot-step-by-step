@@ -27,7 +27,8 @@ func main() {
 		fmt.Print(paletteErr)
 		os.Exit(1)
 	}
-	exporter, exporterErr := CreateExporter(*exporterName, representation, *folder, *filename, palette)
+	coloring := Coloring{palette}
+	exporter, exporterErr := CreateExporter(*exporterName, representation, *folder, *filename, coloring)
 	if exporterErr != nil {
 		fmt.Print(exporterErr)
 		os.Exit(1)

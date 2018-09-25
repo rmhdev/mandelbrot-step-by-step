@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"image/color"
 	"image/color/palette"
+	"math"
 )
 
 type Palette interface {
-	color(v Verification) color.Color
+	color(position int) color.Color
+	length() int
 }
 
 func CreatePalette(name string) (Palette, error) {
@@ -27,8 +29,13 @@ func CreatePalette(name string) (Palette, error) {
 type BlackWhitePalette struct {
 }
 
-func (p BlackWhitePalette) color(v Verification) color.Color {
-	if v.isInside {
+func (p BlackWhitePalette) length() int {
+	return 2
+}
+
+func (p BlackWhitePalette) color(position int) color.Color {
+	pos := int(math.Abs(float64(position))) % 2
+	if 0 == pos {
 		return color.RGBA{0, 0, 0, 255}
 	}
 	return color.RGBA{255, 255, 255, 255}
@@ -53,23 +60,25 @@ var BobRoss = []color.Color{
 type BobRossPalette struct {
 }
 
-func (p BobRossPalette) color(v Verification) color.Color {
-	if v.isInside {
-		return BobRoss[0]
-	}
-	pos := (v.iterations) % (len(BobRoss) - 1)
+func (p BobRossPalette) length() int {
+	return len(BobRoss)
+}
 
-	return BobRoss[pos+1]
+func (p BobRossPalette) color(position int) color.Color {
+	pos := int(math.Abs(float64(position))) % (p.length())
+
+	return BobRoss[pos]
 }
 
 type Plan9Palette struct {
 }
 
-func (p Plan9Palette) color(v Verification) color.Color {
-	if v.isInside {
-		return palette.Plan9[0]
-	}
-	pos := (v.iterations) % (len(palette.Plan9) - 1)
+func (p Plan9Palette) length() int {
+	return len(palette.Plan9)
+}
 
-	return palette.Plan9[pos+1]
+func (p Plan9Palette) color(position int) color.Color {
+	pos := int(math.Abs(float64(position))) % (p.length())
+
+	return palette.Plan9[pos]
 }
