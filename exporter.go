@@ -61,10 +61,11 @@ func (e ImageExporter) name() string {
 }
 
 func (e ImageExporter) export() (string, error) {
-	image := image.NewRGBA(image.Rect(0, 0, e.representation.width(), e.representation.height()))
+	rect := image.Rect(0, 0, e.representation.width(), e.representation.height())
+	imageResult := image.NewRGBA(rect)
 	for y := 0; y < e.representation.height(); y++ {
 		for x := 0; x < e.representation.width(); x++ {
-			image.Set(x, y, e.coloring.color(e.representation.get(x, y)))
+			imageResult.Set(x, y, e.coloring.color(e.representation.get(x, y)))
 		}
 	}
 	// If destination folder does not exist, create it:
@@ -89,7 +90,7 @@ func (e ImageExporter) export() (string, error) {
 		return "", err
 	}
 	defer f.Close()
-	png.Encode(f, image)
+	png.Encode(f, imageResult)
 
 	return resultFilename, nil
 }

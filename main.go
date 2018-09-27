@@ -17,6 +17,7 @@ func main() {
 	folder := flag.String("folder", "mandelbrot", "folder for exporting images")
 	filename := flag.String("filename", "", "name of the image")
 	paletteName := flag.String("palette", "bw", "name of the color palette")
+	coloringName := flag.String("coloring", "basic", "name of the coloring method")
 
 	flag.Parse() // Don't forget this!
 
@@ -27,7 +28,11 @@ func main() {
 		fmt.Print(paletteErr)
 		os.Exit(1)
 	}
-	coloring := Coloring{palette}
+	coloring, coloringErr := CreateColoring(*coloringName, palette)
+	if coloringErr != nil {
+		fmt.Print(coloringErr)
+		os.Exit(1)
+	}
 	exporter, exporterErr := CreateExporter(*exporterName, representation, *folder, *filename, coloring)
 	if exporterErr != nil {
 		fmt.Print(exporterErr)

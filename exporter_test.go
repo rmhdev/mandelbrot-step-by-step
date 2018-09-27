@@ -23,12 +23,14 @@ func TestStdOutput(t *testing.T) {
 }
 
 func DefaultColoring() Coloring {
-	return Coloring{BlackWhitePalette{}}
+	c, _ := CreateColoring("basic", BlackWhitePalette{})
+
+	return c
 }
 
 func NewDefaultVeritication() Representation {
 	representation := CreateRepresentation(4, 3)
-	verification := Verification{true, 1}
+	verification := Verification{true, 1, 0.0, 0.0}
 	representation.set(0, 1, verification)
 	representation.set(1, 1, verification)
 	representation.set(2, 1, verification)

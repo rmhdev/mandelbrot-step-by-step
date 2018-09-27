@@ -57,7 +57,7 @@ func TestToImag(t *testing.T) {
 func TestRepresentation(t *testing.T) {
 	config := Config{3, 3, -2.5, 1.0, -1.0, 1.0}
 	verifier := Verifier{1}
-	verification := Verification{true, 1}
+	verification := Verification{true, 1, 0.0, 0.0}
 	expected := CreateRepresentation(11, 11)
 	expected.set(0, 0, verification)
 	expected.set(0, 1, verification)
