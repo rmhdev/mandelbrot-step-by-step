@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"io/ioutil"
 	"log"
 	"os"
@@ -29,12 +30,12 @@ func DefaultColoring() Coloring {
 }
 
 func NewDefaultVeritication() Representation {
-	representation := CreateRepresentation(4, 3)
+	size, _ := CreateSize(4, 3, 1)
+	representation := CreateRepresentation(size)
 	verification := Verification{true, 1, 0.0, 0.0}
-	representation.set(0, 1, verification)
-	representation.set(1, 1, verification)
-	representation.set(2, 1, verification)
-	representation.set(3, 1, verification)
+	for i := 0; i < size.width; i++ {
+		representation.set(i, 1, verification)
+	}
 
 	return representation
 }
@@ -82,7 +83,8 @@ func TestImageCreationCreatesFolderIfDoesNotExist(t *testing.T) {
 }
 
 func TestImageCreationGeneratesImageNameWhenEmpty(t *testing.T) {
-	representation := NewDefaultVeritication()
+	size, _ := CreateSize(4, 3, 4)
+	representation := NewDefaultVerificationWithSize(size)
 
 	dir, err := ioutil.TempDir("", "unknown-image-name")
 	if err != nil {
@@ -95,6 +97,10 @@ func TestImageCreationGeneratesImageNameWhenEmpty(t *testing.T) {
 	}
 	if !strings.HasSuffix(result, ".png") {
 		t.Errorf("If image name is empty, app should generate a *.png name. Got: %s", result)
+	}
+	expectedName := "4x3.png"
+	if !strings.HasSuffix(result, expectedName) {
+		t.Errorf("If image name is empty, app should generate a name based on the final size. File: %s, Expected name: %s", result, expectedName)
 	}
 	defer os.RemoveAll(dir)
 }
@@ -123,6 +129,56 @@ func TestImageCreationGeneratesImageNameWithCorrectExtension(t *testing.T) {
 		}
 	}
 	defer os.RemoveAll(dir)
+}
+
+func TestImageCreationGeneratesImageWithCorrectSize(t *testing.T) {
+
+	dir, err := ioutil.TempDir("", "image-size-check")
+	if err != nil {
+		log.Fatal(err)
+	}
+	tests := []struct {
+		width          int
+		height         int
+		factor         int
+		expectedWidth  int
+		expectedHeight int
+	}{
+		{4, 3, 1, 4, 3},
+		{4, 3, 10, 4, 3},
+	}
+
+	for _, test := range tests {
+		size, _ := CreateSize(test.width, test.height, test.factor)
+		representation := NewDefaultVerificationWithSize(size)
+		exporter := ImageExporter{representation, dir, "image.png", DefaultColoring()}
+		imagePath, _ := exporter.export()
+
+		file, err := os.Open(imagePath)
+		if err != nil {
+			t.Errorf("Cannot check image size: %v", err)
+		}
+
+		image, _, err := image.DecodeConfig(file)
+		if err != nil {
+			t.Errorf("Cannot decode image %s: %v", imagePath, err)
+		}
+		if image.Width != test.expectedWidth {
+			t.Errorf("Incorrect image width %s; got: %d, expected: %d", imagePath, image.Width, test.expectedWidth)
+		}
+		//return image.Width, image.Height
+	}
+	defer os.RemoveAll(dir)
+}
+
+func NewDefaultVerificationWithSize(size Size) Representation {
+	representation := CreateRepresentation(size)
+	verification := Verification{true, 1, 0.0, 0.0}
+	for i := 0; i < size.width; i++ {
+		representation.set(i, 1, verification)
+	}
+
+	return representation
 }
 
 func TestCreateTextExporter(t *testing.T) {

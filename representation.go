@@ -2,22 +2,23 @@ package main
 
 type Representation struct {
 	points [][]Verification
+	size   Size
 }
 
-func CreateRepresentation(width int, height int) Representation {
-	points := make([][]Verification, height)
+func CreateRepresentation(size Size) Representation {
+	points := make([][]Verification, size.rawHeight())
 	for i := range points {
-		points[i] = make([]Verification, width)
+		points[i] = make([]Verification, size.rawWidth())
 	}
 
-	return Representation{points}
+	return Representation{points, size}
 }
 
-func (r Representation) width() int {
+func (r Representation) cols() int {
 	return len(r.points[0])
 }
 
-func (r Representation) height() int {
+func (r Representation) rows() int {
 	return len(r.points)
 }
 

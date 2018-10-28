@@ -7,6 +7,8 @@ import (
 	"image/png"
 	"os"
 	"strings"
+
+	"github.com/nfnt/resize"
 )
 
 type Exporter interface {
@@ -34,9 +36,9 @@ func (e TextExporter) name() string {
 
 func (e TextExporter) export() (string, error) {
 	result := ""
-	for y := 0; y < e.representation.height(); y++ {
+	for y := 0; y < e.representation.rows(); y++ {
 		line := ""
-		for x := 0; x < e.representation.width(); x++ {
+		for x := 0; x < e.representation.cols(); x++ {
 			if e.representation.get(x, y).isInside {
 				line += "*"
 			} else {
@@ -61,13 +63,15 @@ func (e ImageExporter) name() string {
 }
 
 func (e ImageExporter) export() (string, error) {
-	rect := image.Rect(0, 0, e.representation.width(), e.representation.height())
-	imageResult := image.NewRGBA(rect)
-	for y := 0; y < e.representation.height(); y++ {
-		for x := 0; x < e.representation.width(); x++ {
-			imageResult.Set(x, y, e.coloring.color(e.representation.get(x, y)))
+	rect := image.Rect(0, 0, e.representation.cols(), e.representation.rows())
+	rawImage := image.NewRGBA(rect)
+	for y := 0; y < e.representation.rows(); y++ {
+		for x := 0; x < e.representation.cols(); x++ {
+			rawImage.Set(x, y, e.coloring.color(e.representation.get(x, y)))
 		}
 	}
+	// resize image
+	resizedImage := resize.Resize(uint(e.representation.size.width), 0, rawImage, resize.Lanczos3)
 	// If destination folder does not exist, create it:
 	if _, folderErr := os.Stat(e.folder); os.IsNotExist(folderErr) {
 		folderErr = os.MkdirAll(e.folder, 0755)
@@ -78,7 +82,7 @@ func (e ImageExporter) export() (string, error) {
 	// Check if the filename is correct. If not, fix it.
 	filename := strings.TrimSpace(e.filename)
 	if "" == filename {
-		filename = fmt.Sprintf("%dx%d", e.representation.width(), e.representation.height())
+		filename = fmt.Sprintf("%dx%d", e.representation.size.width, e.representation.size.height)
 	}
 	if !strings.HasSuffix(strings.ToLower(filename), ".png") {
 		filename = fmt.Sprintf("%s.png", filename)
@@ -90,7 +94,7 @@ func (e ImageExporter) export() (string, error) {
 		return "", err
 	}
 	defer f.Close()
-	png.Encode(f, imageResult)
+	png.Encode(f, resizedImage)
 
 	return resultFilename, nil
 }

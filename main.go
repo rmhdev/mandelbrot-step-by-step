@@ -9,9 +9,10 @@ import (
 func main() {
 	width := flag.Int("width", 804, "width")
 	height := flag.Int("height", 603, "height")
-	realMin := flag.Float64("realMin", -2.5, "Minimum value for real part")
-	realMax := flag.Float64("realMax", 1.0, "Maximum value for real part")
-	imagMin := flag.Float64("imagMin", -1.3125, "Minimum value for imaginary part")
+	factor := flag.Int("aa", 1, "antialiasing factor")
+	realMin := flag.Float64("realMin", -2.5, "minimum value for real part")
+	realMax := flag.Float64("realMax", 1.0, "maximum value for real part")
+	imagMin := flag.Float64("imagMin", -1.3125, "minimum value for imaginary part")
 	iterations := flag.Int("iterations", 50, "maximum number of iterations per pixel")
 	exporterName := flag.String("exporter", "image", "name of the exporter")
 	folder := flag.String("folder", "mandelbrot", "folder for exporting images")
@@ -21,7 +22,12 @@ func main() {
 
 	flag.Parse() // Don't forget this!
 
-	config := CreateConfig(*width, *height, *realMin, *realMax, *imagMin)
+	size, sizeErr := CreateSize(*width, *height, *factor)
+	if sizeErr != nil {
+		fmt.Print(sizeErr)
+		os.Exit(1)
+	}
+	config := CreateConfig(size, *realMin, *realMax, *imagMin)
 	representation := config.representation(Verifier{*iterations})
 	palette, paletteErr := CreatePalette(*paletteName)
 	if paletteErr != nil {
