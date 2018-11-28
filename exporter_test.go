@@ -31,7 +31,8 @@ func DefaultColoring() Coloring {
 
 func NewDefaultVeritication() Representation {
 	size, _ := CreateSize(4, 3, 1)
-	representation := CreateRepresentation(size)
+	config := CreateConfig(size, 10, -2.0, 2.0, -1.0)
+	representation := CreateRepresentation(config)
 	verification := Verification{true, 1, 0.0, 0.0}
 	for i := 0; i < size.width; i++ {
 		representation.set(i, 1, verification)
@@ -172,7 +173,8 @@ func TestImageCreationGeneratesImageWithCorrectSize(t *testing.T) {
 }
 
 func NewDefaultVerificationWithSize(size Size) Representation {
-	representation := CreateRepresentation(size)
+	config := CreateConfig(size, 10, -2.0, 2.0, -1.0)
+	representation := CreateRepresentation(config)
 	verification := Verification{true, 1, 0.0, 0.0}
 	for i := 0; i < size.width; i++ {
 		representation.set(i, 1, verification)

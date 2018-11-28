@@ -3,20 +3,22 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math"
 )
 
 type Config struct {
-	size    Size
-	realMin float64
-	realMax float64
-	imagMin float64
-	imagMax float64
+	size       Size
+	iterations int
+	realMin    float64
+	realMax    float64
+	imagMin    float64
+	imagMax    float64
 }
 
-func CreateConfig(size Size, realMin float64, realMax float64, imagMin float64) Config {
+func CreateConfig(size Size, iterations int, realMin float64, realMax float64, imagMin float64) Config {
 	imagMax := imagMin + (realMax-realMin)*float64(size.rawHeight())/float64(size.rawWidth())
 
-	return Config{size, realMin, realMax, imagMin, imagMax}
+	return Config{size, iterations, realMin, realMax, imagMin, imagMax}
 }
 
 func (c Config) toReal(x int) (float64, error) {
@@ -37,8 +39,9 @@ func (c Config) toImag(y int) (float64, error) {
 	return c.imagMax - float64(y)*size, nil
 }
 
-func (c Config) representation(verifier Verifier) Representation {
-	representation := CreateRepresentation(c.size)
+func (c Config) representation() Representation {
+	verifier := c.verifier()
+	representation := CreateRepresentation(c)
 	realC, imagC := 0.0, 0.0
 	for y := 0; y < c.size.rawHeight(); y++ {
 		imagC, _ = c.toImag(y)
@@ -48,4 +51,21 @@ func (c Config) representation(verifier Verifier) Representation {
 		}
 	}
 	return representation
+}
+
+func (c Config) verifier() Verifier {
+	return Verifier{c.iterations}
+}
+
+func (c Config) center() (float64, float64) {
+	realRadius, imagRadius := c.radius()
+
+	return c.realMin + realRadius, c.imagMin + imagRadius
+}
+
+func (c Config) radius() (float64, float64) {
+	realRadius := c.realMax - (c.realMax - math.Abs(c.realMax-c.realMin)/2)
+	imagRadius := c.imagMax - (c.imagMax - math.Abs(c.imagMax-c.imagMin)/2)
+
+	return realRadius, imagRadius
 }

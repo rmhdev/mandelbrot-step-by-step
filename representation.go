@@ -2,16 +2,16 @@ package main
 
 type Representation struct {
 	points [][]Verification
-	size   Size
+	config Config
 }
 
-func CreateRepresentation(size Size) Representation {
-	points := make([][]Verification, size.rawHeight())
+func CreateRepresentation(config Config) Representation {
+	points := make([][]Verification, config.size.rawHeight())
 	for i := range points {
-		points[i] = make([]Verification, size.rawWidth())
+		points[i] = make([]Verification, config.size.rawWidth())
 	}
 
-	return Representation{points, size}
+	return Representation{points, config}
 }
 
 func (r Representation) cols() int {

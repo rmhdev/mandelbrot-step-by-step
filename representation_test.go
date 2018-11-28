@@ -4,7 +4,8 @@ import "testing"
 
 func TestDefaultIsInside(t *testing.T) {
 	size, _ := CreateSize(11, 11, 1)
-	representation := CreateRepresentation(size)
+	config := CreateConfig(size, 10, -2.0, 2.0, -1.0)
+	representation := CreateRepresentation(config)
 	result := representation.get(0, 0)
 	if false != result.isInside {
 		t.Errorf("Incorrect default value for isInside(%d, %d), got: %t, expected: %t", 0, 0, false, result.isInside)
@@ -22,8 +23,9 @@ func TestSetValue(t *testing.T) {
 		{5, 5, false, false},
 	}
 	size, _ := CreateSize(11, 11, 1)
+	config := CreateConfig(size, 10, -2.0, 2.0, -1.0)
 	for _, test := range tests {
-		representation := CreateRepresentation(size)
+		representation := CreateRepresentation(config)
 		representation.set(test.x, test.y, Verification{test.isInside, 1, 0.0, 0.0})
 		result := representation.get(test.x, test.y)
 		if test.expectedIsInside != result.isInside {
@@ -34,7 +36,8 @@ func TestSetValue(t *testing.T) {
 
 func TestSizeShouldDefendOnFactor(t *testing.T) {
 	size, _ := CreateSize(10, 20, 5)
-	representation := CreateRepresentation(size)
+	config := CreateConfig(size, 10, -2.0, 2.0, -1.0)
+	representation := CreateRepresentation(config)
 
 	if size.rawWidth() != representation.cols() {
 		t.Errorf("Incorrect cols in representation; got: %d, expected: %d", representation.cols(), size.rawWidth())
