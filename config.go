@@ -39,17 +39,28 @@ func (c Config) toImag(y int) (float64, error) {
 	return c.imagMax - float64(y)*size, nil
 }
 
-func (c Config) representation() Representation {
+func (c Config) representation(p Progress, filename string) Representation {
 	verifier := c.verifier()
 	representation := CreateRepresentation(c)
 	realC, imagC := 0.0, 0.0
+	progressText := filename + ". build "
+	total := c.size.rawHeight()
+	previous := 0
+	actual := 0
 	for y := 0; y < c.size.rawHeight(); y++ {
 		imagC, _ = c.toImag(y)
 		for x := 0; x < c.size.rawWidth(); x++ {
 			realC, _ = c.toReal(x)
 			representation.set(x, y, verifier.verify(realC, imagC))
 		}
+		actual = int(p.maxBars * (y + 1) / total)
+		if actual > previous {
+			p.bar(progressText, p.maxBars, actual)
+			previous = actual
+		}
 	}
+	p.writeln("ok")
+
 	return representation
 }
 

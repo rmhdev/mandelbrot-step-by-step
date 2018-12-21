@@ -85,7 +85,8 @@ func TestRepresentation(t *testing.T) {
 	expected.set(2, 1, verification)
 	expected.set(2, 2, verification)
 
-	result := config.representation()
+	progress, _ := CreateProgress("quiet")
+	result := config.representation(progress, "filename")
 	for x := 0; x < result.cols(); x++ {
 		for y := 0; y < result.rows(); y++ {
 			if expected.get(x, y).isInside != result.get(x, y).isInside {

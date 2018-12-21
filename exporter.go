@@ -22,12 +22,12 @@ type Exporter interface {
 	export() (string, error)
 }
 
-func CreateExporter(name string, r Representation, folder string, filename string, coloring Coloring) (Exporter, error) {
+func CreateExporter(name string, r Representation, folder string, filename string, coloring Coloring, progress Progress) (Exporter, error) {
 	switch name {
 	case "text":
 		return TextExporter{r}, nil
 	case "image":
-		return ImageExporter{r, folder, filename, coloring}, nil
+		return ImageExporter{r, folder, filename, coloring, progress}, nil
 	}
 	return nil, errors.New(fmt.Sprintf("Invalid Exporter type '%s'", name))
 }
@@ -62,6 +62,7 @@ type ImageExporter struct {
 	folder         string
 	filename       string
 	coloring       Coloring
+	progress       Progress
 }
 
 func (e ImageExporter) name() string {
@@ -71,11 +72,21 @@ func (e ImageExporter) name() string {
 func (e ImageExporter) export() (string, error) {
 	rect := image.Rect(0, 0, e.representation.cols(), e.representation.rows())
 	rawImage := image.NewRGBA(rect)
+	progressText := e.filename + ". export"
+	total := e.representation.rows()
+	previous := 0
+	actual := 0
 	for y := 0; y < e.representation.rows(); y++ {
 		for x := 0; x < e.representation.cols(); x++ {
 			rawImage.Set(x, y, e.coloring.color(e.representation.get(x, y)))
 		}
+		actual = int(e.progress.maxBars * (y + 1) / total)
+		if actual > previous {
+			e.progress.bar(progressText, e.progress.maxBars, actual)
+			previous = actual
+		}
 	}
+	e.progress.write("generating image... ")
 
 	// resize image
 	resizedImage := resize.Resize(uint(e.representation.config.size.width), 0, rawImage, resize.Lanczos3)
@@ -109,6 +120,7 @@ func (e ImageExporter) export() (string, error) {
 	}
 	defer f.Close()
 	png.Encode(f, finalImage) //resizedImage
+	e.progress.writeln("ok")
 
 	return resultFilename, nil
 }

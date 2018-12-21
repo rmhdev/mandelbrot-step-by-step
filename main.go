@@ -25,52 +25,57 @@ func main() {
 	filename := flag.String("filename", "", "name of the image")
 	paletteName := flag.String("palette", "bw", "name of the color palette")
 	coloringName := flag.String("coloring", "basic", "name of the coloring method")
+	verbosity := flag.String("verbosity", "v", "verbosity level")
 
 	flag.Parse() // Don't forget this!
 
+	progress, progressErr := CreateProgress(*verbosity)
+	if progressErr != nil {
+		fmt.Print(progressErr)
+		os.Exit(1)
+	}
 	size, sizeErr := CreateSize(*width, *height, *factor)
 	if sizeErr != nil {
-		fmt.Print(sizeErr)
+		progress.writeln(sizeErr)
 		os.Exit(1)
 	}
 	palette, paletteErr := CreatePalette(*paletteName)
 	if paletteErr != nil {
-		fmt.Print(paletteErr)
+		progress.writeln(paletteErr)
 		os.Exit(1)
 	}
 	coloring, coloringErr := CreateColoring(*coloringName, palette)
 	if coloringErr != nil {
-		fmt.Print(coloringErr)
+		progress.writeln(coloringErr)
 		os.Exit(1)
 	}
-
 	zoom, zoomErr := CreateZoom(*zoomSteps, *zoomRatio, *zoomRealCenter, *zoomImagCenter)
 	if zoomErr != nil {
-		fmt.Print(zoomErr)
+		progress.writeln(zoomErr)
 		os.Exit(1)
 	}
 
 	fileNameValue := *filename
 	config := CreateConfig(size, *iterations, *realMin, *realMax, *imagMin)
 	currentFilename := ""
-	i := 1
-	for i <= zoom.steps {
-		representation := config.representation()
+
+	for i := 1; i <= zoom.steps; i++ {
 		currentFilename = zoom.name(i, fileNameValue)
-		exporter, exporterErr := CreateExporter(*exporterName, representation, *folder, currentFilename, coloring)
+		representation := config.representation(progress, currentFilename)
+		exporter, exporterErr := CreateExporter(*exporterName, representation, *folder, currentFilename, coloring, progress)
 		if exporterErr != nil {
-			fmt.Print(exporterErr)
+			progress.writeln(exporterErr)
 			os.Exit(1)
 		}
 		result, err := exporter.export()
 		if err != nil {
-			fmt.Print(err)
+			progress.writeln(err)
 			os.Exit(1)
 		}
 		config = zoom.update(config)
-		i += 1
 
-		fmt.Println(result)
+		if "text" == exporter.name() {
+			fmt.Println(result)
+		}
 	}
-
 }

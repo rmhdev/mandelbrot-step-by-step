@@ -13,7 +13,7 @@ import (
 func TestStdOutput(t *testing.T) {
 	representation := NewDefaultVeritication()
 
-	exporter, _ := CreateExporter("text", representation, "", "", DefaultColoring())
+	exporter, _ := CreateExporter("text", representation, "", "", DefaultColoring(), DefaultProgress())
 	result, _ := exporter.export()
 	result = strings.Replace(result, fmt.Sprintln(""), "_", -1)
 
@@ -27,6 +27,12 @@ func DefaultColoring() Coloring {
 	c, _ := CreateColoring("basic", BlackWhitePalette{})
 
 	return c
+}
+
+func DefaultProgress() Progress {
+	p, _ := CreateProgress("quiet")
+
+	return p
 }
 
 func NewDefaultVeritication() Representation {
@@ -48,7 +54,7 @@ func TestImageCreatesFile(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	exporter := ImageExporter{representation, dir, "mandelbrot.png", DefaultColoring()}
+	exporter := ImageExporter{representation, dir, "mandelbrot.png", DefaultColoring(), DefaultProgress()}
 	result, exportErr := exporter.export()
 	if exportErr != nil {
 		t.Errorf("Unexpected error while exporting! Got: '%t', expected nil", exportErr)
@@ -71,7 +77,7 @@ func TestImageCreationCreatesFolderIfDoesNotExist(t *testing.T) {
 		log.Fatal(err)
 	}
 	expectedDir := strings.Join([]string{baseDir, "new-folder"}, "/")
-	exporter := ImageExporter{representation, expectedDir, "mandelbrot.png", DefaultColoring()}
+	exporter := ImageExporter{representation, expectedDir, "mandelbrot.png", DefaultColoring(), DefaultProgress()}
 	_, exportErr := exporter.export()
 	if exportErr != nil {
 		t.Errorf("Unexpected error while creating Mandelbrot image, got: '%s'", exportErr)
@@ -91,7 +97,7 @@ func TestImageCreationGeneratesImageNameWhenEmpty(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	exporter := ImageExporter{representation, dir, "", DefaultColoring()}
+	exporter := ImageExporter{representation, dir, "", DefaultColoring(), DefaultProgress()}
 	result, exportErr := exporter.export()
 	if exportErr != nil {
 		t.Errorf("Unexpected error while exporting! Got: '%t', expected nil", exportErr)
@@ -123,7 +129,7 @@ func TestImageCreationGeneratesImageNameWithCorrectExtension(t *testing.T) {
 		{" mandelbrot-4 ", "mandelbrot-4.png"},
 	}
 	for _, test := range tests {
-		exporter := ImageExporter{representation, dir, test.name, DefaultColoring()}
+		exporter := ImageExporter{representation, dir, test.name, DefaultColoring(), DefaultProgress()}
 		result, _ := exporter.export()
 		if !strings.HasSuffix(result, test.expectedName) {
 			t.Errorf("Incorrect filename extension. Got: '%s', expected filename: '%s'", result, test.expectedName)
@@ -152,7 +158,7 @@ func TestImageCreationGeneratesImageWithCorrectSize(t *testing.T) {
 	for _, test := range tests {
 		size, _ := CreateSize(test.width, test.height, test.factor)
 		representation := NewDefaultVerificationWithSize(size)
-		exporter := ImageExporter{representation, dir, "image.png", DefaultColoring()}
+		exporter := ImageExporter{representation, dir, "image.png", DefaultColoring(), DefaultProgress()}
 		imagePath, _ := exporter.export()
 
 		file, err := os.Open(imagePath)
@@ -185,7 +191,7 @@ func NewDefaultVerificationWithSize(size Size) Representation {
 
 func TestCreateTextExporter(t *testing.T) {
 	representation := NewDefaultVeritication()
-	exporter, _ := CreateExporter("text", representation, "", "", DefaultColoring())
+	exporter, _ := CreateExporter("text", representation, "", "", DefaultColoring(), DefaultProgress())
 	if "text" != exporter.name() {
 		t.Errorf("Incorrect exporter created, expected 'text' exporter")
 	}
@@ -198,7 +204,7 @@ func TestCreateImageExporter(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	exporter, _ := CreateExporter("image", representation, baseDir, "mandelbrot.png", DefaultColoring())
+	exporter, _ := CreateExporter("image", representation, baseDir, "mandelbrot.png", DefaultColoring(), DefaultProgress())
 	if "image" != exporter.name() {
 		t.Errorf("Incorrect exporter created, expected 'image' exporter")
 	}
@@ -206,7 +212,7 @@ func TestCreateImageExporter(t *testing.T) {
 
 func TestCreateUnknownExporter(t *testing.T) {
 	representation := NewDefaultVeritication()
-	exporter, err := CreateExporter("lorem", representation, "", "", DefaultColoring())
+	exporter, err := CreateExporter("lorem", representation, "", "", DefaultColoring(), DefaultProgress())
 	if err == nil {
 		t.Errorf("Creating an incorrect 'lorem' exporter should return error, got: nil")
 	}
